@@ -3,6 +3,7 @@ import { Portal } from '../../internal/Portal';
 import { cx } from '../../internal/cx';
 import { getFocusableElements } from '../../internal/getFocusableElements';
 import { mergeRefs } from '../../internal/mergeRefs';
+import { useSafeLayoutEffect } from '../../internal/useSafeLayoutEffect';
 import { Slot } from '../../primitives/Slot';
 import { useControllableState } from '../../hooks/useControllableState';
 import styles from './Dialog.module.css';
@@ -214,13 +215,14 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(funct
     };
   }, [open]);
 
-  React.useEffect(() => {
+  useSafeLayoutEffect(() => {
     if (!open) {
       return;
     }
 
     const content = contentRef.current;
     const previousFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const fallbackTrigger = triggerRef.current;
 
     if (!content) {
       return;
@@ -231,7 +233,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(funct
     (autoFocusTarget ?? focusableElements[0] ?? content).focus();
 
     return () => {
-      const fallbackTarget = triggerRef.current ?? previousFocusedElement;
+      const fallbackTarget = fallbackTrigger ?? previousFocusedElement;
       fallbackTarget?.focus();
     };
   }, [contentRef, open, triggerRef]);

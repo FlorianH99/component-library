@@ -7,13 +7,7 @@ export type PortalProps = {
 };
 
 export function Portal({ children, container }: PortalProps): React.ReactPortal | null {
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
+  if (typeof document === 'undefined') {
     return null;
   }
 

@@ -10,8 +10,10 @@ type SlotChildProps = React.HTMLAttributes<HTMLElement> & {
   ref?: React.Ref<HTMLElement>;
 };
 
-function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: SlotChildProps) {
-  const mergedProps: SlotChildProps = { ...slotProps, ...childProps };
+type SyntheticEventHandler = (event: React.SyntheticEvent) => void;
+
+function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: SlotChildProps): SlotChildProps {
+  const mergedProps: Record<string, unknown> = { ...slotProps, ...childProps };
 
   if (slotProps.className && typeof childProps.className === 'string') {
     mergedProps.className = `${slotProps.className} ${childProps.className}`;
@@ -29,18 +31,18 @@ function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: Sl
       continue;
     }
 
-    const slotHandler = slotProps[key as keyof React.HTMLAttributes<HTMLElement>];
-    const childHandler = childProps[key as keyof SlotChildProps];
+    const slotHandler = slotProps[key as keyof React.HTMLAttributes<HTMLElement>] as unknown;
+    const childHandler = childProps[key as keyof SlotChildProps] as unknown;
 
     if (typeof slotHandler === 'function' && typeof childHandler === 'function') {
-      mergedProps[key as keyof SlotChildProps] = composeEventHandlers(
-        childHandler as (event: React.SyntheticEvent) => void,
-        slotHandler as (event: React.SyntheticEvent) => void
-      ) as SlotChildProps[keyof SlotChildProps];
+      mergedProps[key] = composeEventHandlers(
+        childHandler as SyntheticEventHandler,
+        slotHandler as SyntheticEventHandler
+      );
     }
   }
 
-  return mergedProps;
+  return mergedProps as SlotChildProps;
 }
 
 export const Slot = React.forwardRef<HTMLElement, SlotProps>(function Slot(

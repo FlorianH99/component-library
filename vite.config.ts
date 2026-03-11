@@ -9,7 +9,8 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'AsterUI',
       formats: ['es', 'cjs'],
-      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs')
+      fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
+      cssFileName: 'styles'
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
