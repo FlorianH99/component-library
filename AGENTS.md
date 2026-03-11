@@ -144,6 +144,40 @@ UI direction should specify:
 - motion style
 - image or illustration strategy
 
+## UI Library Selection Guide
+Choose UI libraries based on the product shape, not popularity.
+
+Preferred defaults:
+- use `Radix UI` for custom product UI, internal tools, settings flows, and most app interfaces that need accessible primitives without imposing a visual style
+- use `React Aria` / `React Stately` for accessibility-critical components, advanced interactions, and design-system or component-library work where behavior and state modeling matter more than prebuilt visuals
+- use `Ariakit` for keyboard-heavy composite widgets such as menus, comboboxes, dialogs, command palettes, and other interaction-dense UI
+- use `MUI` for fast-moving enterprise apps, admin panels, dense forms, and data-heavy interfaces where broad component coverage matters
+- use `Mantine` for polished product apps and dashboards when speed matters but a more refined base than raw primitives is useful
+- use `shadcn/ui` only when the project is explicitly Tailwind-oriented and the components will be meaningfully restyled or adapted rather than used as a generic default
+- use `Ant Design` only for dense enterprise back-office products where its information-heavy patterns are a strong fit
+
+Avoid:
+- defaulting to a visual UI framework when headless primitives would better preserve the design system
+- shipping recognizable library-default styling in projects that are meant to feel intentional or brand-specific
+- mixing multiple UI libraries without a clear architectural reason
+
+## Style Direction By Prompt
+Map prompt shape to implementation style.
+
+- if the prompt implies a custom brand, product specificity, or a deliberate visual identity: use headless primitives such as `Radix UI`, `React Aria`, or `Ariakit` with custom tokens and styling
+- if the prompt implies enterprise administration, data density, operations tooling, or fast CRUD delivery: use `MUI` or `Ant Design`, but theme them intentionally and avoid untouched defaults
+- if the prompt implies a startup dashboard, modern product shell, or polished app UI: use `Mantine` or carefully customized `shadcn/ui`
+- if the prompt implies a component library, design system, or reusable public primitives: prefer `React Aria` or `Radix UI`, with strong TypeScript contracts, explicit state models, and token-first styling
+
+## Styling Rules
+Regardless of library choice:
+- define design tokens early
+- avoid stock component-library aesthetics
+- preserve accessible focus, disabled, loading, empty, and error states
+- prefer composition over prop explosion
+- make visual direction explicit: typography, color logic, spacing rhythm, component density, and motion style
+- do not let the library dictate the product identity
+
 ## Library API Standards
 When designing public APIs:
 - optimize for consumer ergonomics
