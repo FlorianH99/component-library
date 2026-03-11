@@ -3,9 +3,7 @@ import { cx } from '../../internal/cx';
 import { useFieldControlProps } from '../Field/Field';
 import styles from '../shared/Control.module.css';
 
-const inputSizes = ['sm', 'md', 'lg'] as const;
-
-type InputSize = (typeof inputSizes)[number];
+export type InputSize = 'sm' | 'md' | 'lg';
 
 export type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> & {
   size?: InputSize;
@@ -28,5 +26,3 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Inp
     />
   );
 });
-
-export type { InputSize };

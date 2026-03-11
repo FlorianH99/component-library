@@ -4,7 +4,11 @@ import { Badge, Tabs } from '../src';
 const meta = {
   title: 'Navigation/Tabs',
   component: Tabs,
-  tags: ['autodocs']
+  tags: ['autodocs'],
+  args: {
+    children: null,
+    defaultValue: 'overview'
+  }
 } satisfies Meta<typeof Tabs>;
 
 export default meta;

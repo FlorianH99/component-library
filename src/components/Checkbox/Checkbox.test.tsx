@@ -5,8 +5,8 @@ describe('Checkbox', () => {
   it('supports the indeterminate visual state through the native input element', () => {
     render(<Checkbox indeterminate label="Partial selection" />);
 
-    const checkbox = screen.getByRole('checkbox', { name: 'Partial selection' }) as HTMLInputElement;
+    const checkbox = screen.getByRole('checkbox', { name: 'Partial selection' });
 
-    expect(checkbox.indeterminate).toBe(true);
+    expect(checkbox).toHaveProperty('indeterminate', true);
   });
 });

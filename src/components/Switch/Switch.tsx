@@ -11,7 +11,8 @@ export const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(function S
   { className, description, id, label, ...props },
   forwardedRef
 ) {
-  const switchId = id ?? React.useId();
+  const generatedId = React.useId();
+  const switchId = id ?? generatedId;
 
   return (
     <label className={cx(className, styles.root)} htmlFor={switchId}>

@@ -4,12 +4,25 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import tseslint from 'typescript-eslint';
 
+const typedConfigs = tseslint.configs.strictTypeChecked.map((config) => ({
+  ...config,
+  files: ['**/*.{ts,tsx}']
+}));
+
 export default tseslint.config(
   {
     ignores: ['dist', 'coverage', 'storybook-static', 'node_modules']
   },
-  js.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
+  {
+    files: ['**/*.{js,mjs,cjs}'],
+    ...js.configs.recommended,
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
+  },
+  ...typedConfigs,
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -30,7 +43,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...jsxA11y.configs.recommended.rules,
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
-      '@typescript-eslint/no-confusing-void-expression': ['error', { 'ignoreArrowShorthand': true }]
+      '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }]
     }
   }
 );

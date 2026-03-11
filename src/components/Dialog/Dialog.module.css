@@ -5,11 +5,20 @@
   display: grid;
   place-items: center;
   padding: var(--aster-space-5);
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
   background: rgb(18 17 23 / 0.54);
   backdrop-filter: blur(10px);
 }
 
 .content {
+  position: relative;
+  z-index: 1;
   inline-size: min(100%, 36rem);
   max-block-size: min(85vh, 48rem);
   overflow: auto;

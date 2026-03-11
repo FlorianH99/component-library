@@ -6,8 +6,12 @@ export type SlotProps = React.HTMLAttributes<HTMLElement> & {
   children: React.ReactElement;
 };
 
-function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: Record<string, unknown>) {
-  const mergedProps: Record<string, unknown> = { ...slotProps, ...childProps };
+type SlotChildProps = React.HTMLAttributes<HTMLElement> & {
+  ref?: React.Ref<HTMLElement>;
+};
+
+function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: SlotChildProps) {
+  const mergedProps: SlotChildProps = { ...slotProps, ...childProps };
 
   if (slotProps.className && typeof childProps.className === 'string') {
     mergedProps.className = `${slotProps.className} ${childProps.className}`;
@@ -16,7 +20,7 @@ function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: Re
   if (slotProps.style || childProps.style) {
     mergedProps.style = {
       ...(slotProps.style ?? {}),
-      ...(childProps.style as React.CSSProperties | undefined)
+      ...(childProps.style ?? {})
     };
   }
 
@@ -26,13 +30,13 @@ function mergeProps(slotProps: React.HTMLAttributes<HTMLElement>, childProps: Re
     }
 
     const slotHandler = slotProps[key as keyof React.HTMLAttributes<HTMLElement>];
-    const childHandler = childProps[key];
+    const childHandler = childProps[key as keyof SlotChildProps];
 
     if (typeof slotHandler === 'function' && typeof childHandler === 'function') {
-      mergedProps[key] = composeEventHandlers(
+      mergedProps[key as keyof SlotChildProps] = composeEventHandlers(
         childHandler as (event: React.SyntheticEvent) => void,
         slotHandler as (event: React.SyntheticEvent) => void
-      );
+      ) as SlotChildProps[keyof SlotChildProps];
     }
   }
 
@@ -43,11 +47,11 @@ export const Slot = React.forwardRef<HTMLElement, SlotProps>(function Slot(
   { children, ...slotProps },
   forwardedRef
 ) {
-  if (!React.isValidElement(children)) {
+  if (!React.isValidElement<SlotChildProps>(children)) {
     return null;
   }
 
-  const childProps = children.props as Record<string, unknown> & { ref?: React.Ref<HTMLElement> };
+  const childProps = children.props;
 
   return React.cloneElement(children, {
     ...mergeProps(slotProps, childProps),

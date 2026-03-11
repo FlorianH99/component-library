@@ -15,14 +15,14 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(functi
   forwardedRef
 ) {
   const internalRef = React.useRef<HTMLInputElement>(null);
+  const generatedId = React.useId();
+  const checkboxId = id ?? generatedId;
 
   React.useEffect(() => {
     if (internalRef.current) {
       internalRef.current.indeterminate = indeterminate;
     }
   }, [indeterminate]);
-
-  const checkboxId = id ?? React.useId();
 
   return (
     <label

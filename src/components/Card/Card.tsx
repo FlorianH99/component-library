@@ -2,11 +2,8 @@ import * as React from 'react';
 import { cx } from '../../internal/cx';
 import styles from './Card.module.css';
 
-const cardPaddings = ['sm', 'md', 'lg'] as const;
-const cardSurfaces = ['outline', 'raised', 'sunken'] as const;
-
-type CardPadding = (typeof cardPaddings)[number];
-type CardSurface = (typeof cardSurfaces)[number];
+export type CardPadding = 'sm' | 'md' | 'lg';
+export type CardSurface = 'outline' | 'raised' | 'sunken';
 
 export type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   padding?: CardPadding;
@@ -25,5 +22,3 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(function Card(
     />
   );
 });
-
-export type { CardPadding, CardSurface };

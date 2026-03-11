@@ -156,13 +156,13 @@ export const FieldError = React.forwardRef<HTMLParagraphElement, FieldErrorProps
 });
 
 type FieldControlProps = {
-  id?: string;
-  disabled?: boolean;
-  required?: boolean;
-  invalid?: boolean;
-  'aria-describedby'?: string;
-  'aria-invalid'?: boolean | 'true' | 'false';
-  'aria-errormessage'?: string;
+  id?: string | undefined;
+  disabled?: boolean | undefined;
+  required?: boolean | undefined;
+  invalid?: boolean | undefined;
+  'aria-describedby'?: string | undefined;
+  'aria-invalid'?: React.AriaAttributes['aria-invalid'];
+  'aria-errormessage'?: string | undefined;
 };
 
 export function useFieldControlProps<Props extends FieldControlProps>(props: Props): Props {

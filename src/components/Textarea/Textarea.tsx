@@ -3,11 +3,8 @@ import { cx } from '../../internal/cx';
 import { useFieldControlProps } from '../Field/Field';
 import styles from '../shared/Control.module.css';
 
-const textareaSizes = ['sm', 'md', 'lg'] as const;
-const textareaResizes = ['vertical', 'both', 'none'] as const;
-
-type TextareaSize = (typeof textareaSizes)[number];
-type TextareaResize = (typeof textareaResizes)[number];
+export type TextareaSize = 'sm' | 'md' | 'lg';
+export type TextareaResize = 'vertical' | 'both' | 'none';
 
 export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   size?: TextareaSize;
@@ -49,5 +46,3 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
     />
   );
 });
-
-export type { TextareaResize, TextareaSize };

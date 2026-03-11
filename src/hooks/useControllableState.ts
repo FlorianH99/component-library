@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 type UseControllableStateParams<T> = {
-  value?: T;
+  value?: T | undefined;
   defaultValue: T;
-  onChange?: (value: T) => void;
+  onChange?: ((value: T) => void) | undefined;
 };
 
 export function useControllableState<T>({
@@ -17,9 +17,10 @@ export function useControllableState<T>({
 
   const setValue = React.useCallback(
     (nextValue: React.SetStateAction<T>) => {
-      const resolvedValue = typeof nextValue === 'function'
-        ? (nextValue as (previousValue: T) => T)(currentValue)
-        : nextValue;
+      const resolvedValue =
+        typeof nextValue === 'function'
+          ? (nextValue as (previousValue: T) => T)(currentValue)
+          : nextValue;
 
       if (!isControlled) {
         setUncontrolledValue(resolvedValue);

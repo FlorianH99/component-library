@@ -3,8 +3,8 @@ import { cx } from '../../internal/cx';
 import { useControllableState } from '../../hooks/useControllableState';
 import styles from './Tabs.module.css';
 
-type TabsOrientation = 'horizontal' | 'vertical';
-type TabsActivationMode = 'automatic' | 'manual';
+export type TabsOrientation = 'horizontal' | 'vertical';
+export type TabsActivationMode = 'automatic' | 'manual';
 
 type ControlledTabsProps = {
   value: string;
@@ -109,7 +109,12 @@ export function Tabs(props: TabsRootProps) {
         nextIndex = currentIndex <= 0 ? triggerEntries.length - 1 : currentIndex - 1;
       }
 
-      const [nextValue, nextTrigger] = triggerEntries[nextIndex];
+      const nextEntry = triggerEntries[nextIndex];
+      if (!nextEntry) {
+        return;
+      }
+
+      const [nextValue, nextTrigger] = nextEntry;
       nextTrigger.ref.current?.focus();
 
       if (activationMode === 'automatic') {
@@ -144,13 +149,13 @@ export function Tabs(props: TabsRootProps) {
 export type TabsListProps = React.HTMLAttributes<HTMLDivElement>;
 
 function TabsList({ className, ...props }: TabsListProps) {
-  const context = useTabsContext('Tabs.List');
+  const { orientation } = useTabsContext('Tabs.List');
 
   return (
     <div
-      aria-orientation={context.orientation}
+      aria-orientation={orientation}
       className={cx(className, styles.list)}
-      data-orientation={context.orientation}
+      data-orientation={orientation}
       role="tablist"
       {...props}
     />
@@ -165,14 +170,19 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(functi
   { className, disabled = false, onClick, onKeyDown, value, ...props },
   forwardedRef
 ) {
-  const context = useTabsContext('Tabs.Trigger');
+  const {
+    activationMode,
+    baseId,
+    moveFocus,
+    orientation,
+    registerTrigger,
+    setValue,
+    value: selectedValue
+  } = useTabsContext('Tabs.Trigger');
   const internalRef = React.useRef<HTMLButtonElement>(null);
-  const selected = context.value === value;
+  const selected = selectedValue === value;
 
-  React.useEffect(
-    () => context.registerTrigger(value, internalRef, disabled),
-    [context.registerTrigger, disabled, value]
-  );
+  React.useEffect(() => registerTrigger(value, internalRef, disabled), [registerTrigger, disabled, value]);
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
     onKeyDown?.(event);
@@ -181,24 +191,24 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(functi
       return;
     }
 
-    const previousKey = context.orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
-    const nextKey = context.orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
+    const previousKey = orientation === 'horizontal' ? 'ArrowLeft' : 'ArrowUp';
+    const nextKey = orientation === 'horizontal' ? 'ArrowRight' : 'ArrowDown';
 
     if (event.key === nextKey) {
       event.preventDefault();
-      context.moveFocus(value, 'next');
+      moveFocus(value, 'next');
     } else if (event.key === previousKey) {
       event.preventDefault();
-      context.moveFocus(value, 'previous');
+      moveFocus(value, 'previous');
     } else if (event.key === 'Home') {
       event.preventDefault();
-      context.moveFocus(value, 'first');
+      moveFocus(value, 'first');
     } else if (event.key === 'End') {
       event.preventDefault();
-      context.moveFocus(value, 'last');
-    } else if (context.activationMode === 'manual' && (event.key === 'Enter' || event.key === ' ')) {
+      moveFocus(value, 'last');
+    } else if (activationMode === 'manual' && (event.key === 'Enter' || event.key === ' ')) {
       event.preventDefault();
-      context.setValue(value);
+      setValue(value);
     }
   }
 
@@ -212,16 +222,16 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(functi
           forwardedRef.current = node;
         }
       }}
-      aria-controls={`${context.baseId}-${sanitizeValue(value)}-panel`}
+      aria-controls={`${baseId}-${sanitizeValue(value)}-panel`}
       aria-selected={selected}
       className={cx(className, styles.trigger)}
       data-state={selected ? 'active' : 'inactive'}
       disabled={disabled}
-      id={`${context.baseId}-${sanitizeValue(value)}-trigger`}
+      id={`${baseId}-${sanitizeValue(value)}-trigger`}
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) {
-          context.setValue(value);
+          setValue(value);
         }
       }}
       onKeyDown={handleKeyDown}
@@ -238,16 +248,16 @@ export type TabsPanelProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 function TabsPanel({ className, value, ...props }: TabsPanelProps) {
-  const context = useTabsContext('Tabs.Panel');
-  const selected = context.value === value;
+  const { baseId, value: selectedValue } = useTabsContext('Tabs.Panel');
+  const selected = selectedValue === value;
   const sanitizedValue = sanitizeValue(value);
 
   return (
     <div
-      aria-labelledby={`${context.baseId}-${sanitizedValue}-trigger`}
+      aria-labelledby={`${baseId}-${sanitizedValue}-trigger`}
       className={cx(className, styles.panel)}
       hidden={!selected}
-      id={`${context.baseId}-${sanitizedValue}-panel`}
+      id={`${baseId}-${sanitizedValue}-panel`}
       role="tabpanel"
       tabIndex={0}
       {...props}
@@ -260,5 +270,3 @@ export const TabsRoot = Object.assign(Tabs, {
   Trigger: TabsTrigger,
   Panel: TabsPanel
 });
-
-export type { TabsActivationMode, TabsListProps, TabsOrientation, TabsPanelProps, TabsTriggerProps };

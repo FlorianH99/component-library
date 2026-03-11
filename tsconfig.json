@@ -25,9 +25,11 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
-    "src",
-    "stories",
-    ".storybook",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "stories/**/*.ts",
+    "stories/**/*.tsx",
+    ".storybook/**/*.ts",
     "vite.config.ts",
     "vitest.config.ts",
     "eslint.config.js"

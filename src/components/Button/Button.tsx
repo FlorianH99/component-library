@@ -4,13 +4,9 @@ import { cx } from '../../internal/cx';
 import { VisuallyHidden } from '../../primitives/VisuallyHidden';
 import styles from './Button.module.css';
 
-const buttonVariants = ['solid', 'soft', 'outline', 'ghost'] as const;
-const buttonTones = ['accent', 'neutral', 'danger'] as const;
-const buttonSizes = ['sm', 'md', 'lg'] as const;
-
-type ButtonVariant = (typeof buttonVariants)[number];
-type ButtonTone = (typeof buttonTones)[number];
-type ButtonSize = (typeof buttonSizes)[number];
+export type ButtonVariant = 'solid' | 'soft' | 'outline' | 'ghost';
+export type ButtonTone = 'accent' | 'neutral' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'lg';
 
 type ButtonCommonProps = {
   variant?: ButtonVariant;
@@ -92,5 +88,3 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
     </button>
   );
 });
-
-export type { ButtonSize, ButtonTone, ButtonVariant };

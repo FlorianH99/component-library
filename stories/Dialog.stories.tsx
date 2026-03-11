@@ -4,7 +4,11 @@ import { Button, Dialog } from '../src';
 const meta = {
   title: 'Overlays/Dialog',
   component: Dialog,
-  tags: ['autodocs']
+  tags: ['autodocs'],
+  args: {
+    children: null,
+    defaultOpen: false
+  }
 } satisfies Meta<typeof Dialog>;
 
 export default meta;

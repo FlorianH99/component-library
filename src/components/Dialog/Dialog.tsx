@@ -63,7 +63,7 @@ function usePresenceCounter() {
 }
 
 export function Dialog(props: DialogRootProps) {
-  const defaultOpen = 'defaultOpen' in props ? props.defaultOpen ?? false : props.open;
+  const defaultOpen = 'defaultOpen' in props ? props.defaultOpen ?? false : props.open ?? false;
   const controlledOpen = 'open' in props ? props.open : undefined;
   const [open, setOpen] = useControllableState({
     value: controlledOpen,
@@ -110,15 +110,15 @@ const DialogTrigger = React.forwardRef<HTMLElement, DialogTriggerProps>(function
   props,
   forwardedRef
 ) {
-  const context = useDialogContext('Dialog.Trigger');
+  const { open, setOpen, triggerRef } = useDialogContext('Dialog.Trigger');
 
   if (props.asChild) {
     return (
       <Slot
-        ref={mergeRefs(forwardedRef, context.triggerRef)}
-        aria-expanded={context.open}
+        ref={mergeRefs(forwardedRef, triggerRef)}
+        aria-expanded={open}
         aria-haspopup="dialog"
-        onClick={() => context.setOpen(true)}
+        onClick={() => setOpen(true)}
       >
         {props.children}
       </Slot>
@@ -130,13 +130,13 @@ const DialogTrigger = React.forwardRef<HTMLElement, DialogTriggerProps>(function
   return (
     <button
       {...buttonProps}
-      ref={mergeRefs(forwardedRef, context.triggerRef as React.Ref<HTMLButtonElement>)}
-      aria-expanded={context.open}
+      ref={mergeRefs(forwardedRef, triggerRef as React.Ref<HTMLButtonElement>)}
+      aria-expanded={open}
       aria-haspopup="dialog"
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) {
-          context.setOpen(true);
+          setOpen(true);
         }
       }}
       type={type}
@@ -158,11 +158,11 @@ type DialogCloseButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export type DialogCloseProps = DialogCloseAsChildProps | DialogCloseButtonProps;
 
 const DialogClose = React.forwardRef<HTMLElement, DialogCloseProps>(function DialogClose(props, forwardedRef) {
-  const context = useDialogContext('Dialog.Close');
+  const { setOpen } = useDialogContext('Dialog.Close');
 
   if (props.asChild) {
     return (
-      <Slot ref={forwardedRef} onClick={() => context.setOpen(false)}>
+      <Slot ref={forwardedRef} onClick={() => setOpen(false)}>
         {props.children}
       </Slot>
     );
@@ -177,7 +177,7 @@ const DialogClose = React.forwardRef<HTMLElement, DialogCloseProps>(function Dia
       onClick={(event) => {
         onClick?.(event);
         if (!event.defaultPrevented) {
-          context.setOpen(false);
+          setOpen(false);
         }
       }}
       type={type}
@@ -187,9 +187,7 @@ const DialogClose = React.forwardRef<HTMLElement, DialogCloseProps>(function Dia
   );
 });
 
-const dialogSizes = ['sm', 'md', 'lg'] as const;
-
-export type DialogSize = (typeof dialogSizes)[number];
+export type DialogSize = 'sm' | 'md' | 'lg';
 
 export type DialogContentProps = React.HTMLAttributes<HTMLDivElement> & {
   size?: DialogSize;
@@ -200,10 +198,11 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(funct
   { children, className, closeOnOverlayPress = true, size = 'md', ...props },
   forwardedRef
 ) {
-  const context = useDialogContext('Dialog.Content');
+  const { contentRef, descriptionId, hasDescription, hasTitle, open, setOpen, titleId, triggerRef } =
+    useDialogContext('Dialog.Content');
 
   React.useEffect(() => {
-    if (!context.open) {
+    if (!open) {
       return;
     }
 
@@ -213,14 +212,14 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(funct
     return () => {
       document.body.style.overflow = originalOverflow;
     };
-  }, [context.open]);
+  }, [open]);
 
   React.useEffect(() => {
-    if (!context.open) {
+    if (!open) {
       return;
     }
 
-    const content = context.contentRef.current;
+    const content = contentRef.current;
     const previousFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     if (!content) {
@@ -232,73 +231,87 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(funct
     (autoFocusTarget ?? focusableElements[0] ?? content).focus();
 
     return () => {
-      const fallbackTarget = context.triggerRef.current ?? previousFocusedElement;
+      const fallbackTarget = triggerRef.current ?? previousFocusedElement;
       fallbackTarget?.focus();
     };
-  }, [context.open, context.contentRef, context.triggerRef]);
+  }, [contentRef, open, triggerRef]);
 
-  if (!context.open) {
+  React.useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+
+      if (event.key !== 'Tab') {
+        return;
+      }
+
+      const currentContent = contentRef.current;
+      if (!currentContent) {
+        return;
+      }
+
+      const focusableElements = getFocusableElements(currentContent);
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        currentContent.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      if (!firstElement || !lastElement) {
+        return;
+      }
+
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [contentRef, open, setOpen]);
+
+  if (!open) {
     return null;
   }
 
   return (
     <Portal>
-      <div
-        className={styles.overlay}
-        onMouseDown={(event) => {
-          if (closeOnOverlayPress && event.target === event.currentTarget) {
-            context.setOpen(false);
-          }
-        }}
-      >
-        <div
-          {...props}
-          ref={mergeRefs(forwardedRef, context.contentRef)}
-          aria-describedby={context.hasDescription ? context.descriptionId : undefined}
-          aria-labelledby={context.hasTitle ? context.titleId : undefined}
-          aria-modal="true"
-          className={cx(className, styles.content, styles[size])}
-          onKeyDown={(event) => {
-            props.onKeyDown?.(event);
-
-            if (event.defaultPrevented) {
-              return;
-            }
-
-            if (event.key === 'Escape') {
-              event.preventDefault();
-              context.setOpen(false);
-              return;
-            }
-
-            if (event.key !== 'Tab') {
-              return;
-            }
-
-            const currentContent = context.contentRef.current;
-            if (!currentContent) {
-              return;
-            }
-
-            const focusableElements = getFocusableElements(currentContent);
-            if (focusableElements.length === 0) {
-              event.preventDefault();
-              currentContent.focus();
-              return;
-            }
-
-            const firstElement = focusableElements[0];
-            const lastElement = focusableElements[focusableElements.length - 1];
-            const activeElement = document.activeElement;
-
-            if (event.shiftKey && activeElement === firstElement) {
-              event.preventDefault();
-              lastElement.focus();
-            } else if (!event.shiftKey && activeElement === lastElement) {
-              event.preventDefault();
-              firstElement.focus();
+      <div className={styles.overlay} role="presentation">
+        <button
+          aria-hidden="true"
+          className={styles.backdrop}
+          onClick={() => {
+            if (closeOnOverlayPress) {
+              setOpen(false);
             }
           }}
+          tabIndex={-1}
+          type="button"
+        />
+        <div
+          {...props}
+          ref={mergeRefs(forwardedRef, contentRef)}
+          aria-describedby={hasDescription ? descriptionId : undefined}
+          aria-labelledby={hasTitle ? titleId : undefined}
+          aria-modal="true"
+          className={cx(className, styles.content, styles[size])}
           role="dialog"
           tabIndex={-1}
         >
@@ -309,24 +322,36 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(funct
   );
 });
 
-export type DialogTitleProps = React.HTMLAttributes<HTMLHeadingElement>;
+export type DialogTitleProps = Omit<React.HTMLAttributes<HTMLHeadingElement>, 'children'> & {
+  children: React.ReactNode;
+};
 
-function DialogTitle({ className, id, ...props }: DialogTitleProps) {
-  const context = useDialogContext('Dialog.Title');
+function DialogTitle({ children, className, id, ...props }: DialogTitleProps) {
+  const { registerTitle, titleId } = useDialogContext('Dialog.Title');
 
-  React.useEffect(() => context.registerTitle(), [context.registerTitle]);
+  React.useEffect(() => registerTitle(), [registerTitle]);
 
-  return <h2 className={cx(className, styles.title)} id={id ?? context.titleId} {...props} />;
+  return (
+    <h2 className={cx(className, styles.title)} id={id ?? titleId} {...props}>
+      {children}
+    </h2>
+  );
 }
 
-export type DialogDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>;
+export type DialogDescriptionProps = Omit<React.HTMLAttributes<HTMLParagraphElement>, 'children'> & {
+  children: React.ReactNode;
+};
 
-function DialogDescription({ className, id, ...props }: DialogDescriptionProps) {
-  const context = useDialogContext('Dialog.Description');
+function DialogDescription({ children, className, id, ...props }: DialogDescriptionProps) {
+  const { descriptionId, registerDescription } = useDialogContext('Dialog.Description');
 
-  React.useEffect(() => context.registerDescription(), [context.registerDescription]);
+  React.useEffect(() => registerDescription(), [registerDescription]);
 
-  return <p className={cx(className, styles.description)} id={id ?? context.descriptionId} {...props} />;
+  return (
+    <p className={cx(className, styles.description)} id={id ?? descriptionId} {...props}>
+      {children}
+    </p>
+  );
 }
 
 export const DialogRoot = Object.assign(Dialog, {
