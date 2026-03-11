@@ -99,6 +99,10 @@ Prefer:
 - state models that cover real UI conditions
 - examples and tests for meaningful states
 - accessibility behavior treated as part of the API
+- direct named hook imports such as `useState`, `useMemo`, `useEffect`, and `useId` instead of `React.useState` or `React.useMemo` in new React code
+
+Avoid:
+- `React.useState`, `React.useMemo`, and similar `React.useX` hook access in freshly written components when a direct import keeps the file simpler and consistent
 
 Every meaningful component should account for:
 - default state
