@@ -1,0 +1,44 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--aster-z-dialog);
+  display: grid;
+  place-items: center;
+  padding: var(--aster-space-5);
+  background: rgb(18 17 23 / 0.54);
+  backdrop-filter: blur(10px);
+}
+
+.content {
+  inline-size: min(100%, 36rem);
+  max-block-size: min(85vh, 48rem);
+  overflow: auto;
+  border: 1px solid rgb(255 255 255 / 0.36);
+  border-radius: var(--aster-radius-3);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(249 244 237 / 0.96));
+  box-shadow: var(--aster-shadow-2);
+  padding: var(--aster-space-6);
+}
+
+.sm {
+  inline-size: min(100%, 28rem);
+}
+
+.md {
+  inline-size: min(100%, 36rem);
+}
+
+.lg {
+  inline-size: min(100%, 48rem);
+}
+
+.title {
+  font: 600 var(--aster-font-size-5) / var(--aster-line-height-tight) var(--ui-font-body);
+  color: var(--ui-color-text);
+}
+
+.description {
+  margin-block-start: var(--aster-space-2);
+  color: var(--ui-color-text-muted);
+  font: var(--ui-text-body);
+}

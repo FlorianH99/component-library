@@ -1,0 +1,36 @@
+:root {
+  color-scheme: light;
+
+  --ui-color-background: var(--aster-color-sand-50);
+  --ui-color-surface: #ffffff;
+  --ui-color-surface-strong: var(--aster-color-ink-50);
+  --ui-color-surface-muted: var(--aster-color-sand-100);
+  --ui-color-border: color-mix(in srgb, var(--aster-color-ink-300) 52%, white);
+  --ui-color-border-strong: color-mix(in srgb, var(--aster-color-ink-500) 52%, white);
+
+  --ui-color-text: var(--aster-color-ink-950);
+  --ui-color-text-muted: var(--aster-color-ink-700);
+  --ui-color-text-subtle: var(--aster-color-ink-500);
+  --ui-color-text-on-accent: #f8fdfe;
+
+  --ui-color-accent: var(--aster-color-accent-600);
+  --ui-color-accent-hover: var(--aster-color-accent-700);
+  --ui-color-accent-soft: var(--aster-color-accent-100);
+
+  --ui-color-success: var(--aster-color-success-700);
+  --ui-color-success-soft: var(--aster-color-success-100);
+  --ui-color-warning: var(--aster-color-warning-700);
+  --ui-color-warning-soft: var(--aster-color-warning-100);
+  --ui-color-danger: var(--aster-color-danger-700);
+  --ui-color-danger-soft: var(--aster-color-danger-100);
+
+  --ui-focus-ring: 0 0 0 3px color-mix(in srgb, var(--ui-color-accent) 28%, white);
+
+  --ui-font-body: var(--aster-font-sans);
+  --ui-font-accent: var(--aster-font-serif);
+  --ui-font-mono: var(--aster-font-mono);
+
+  --ui-text-label: 600 var(--aster-font-size-2) / var(--aster-line-height-snug) var(--ui-font-body);
+  --ui-text-body: 400 var(--aster-font-size-3) / var(--aster-line-height-regular) var(--ui-font-body);
+  --ui-text-title: 600 var(--aster-font-size-5) / var(--aster-line-height-tight) var(--ui-font-body);
+}

@@ -1,0 +1,89 @@
+.root {
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--aster-space-3);
+  color: var(--ui-color-text);
+}
+
+.root[data-disabled] {
+  color: var(--ui-color-text-subtle);
+}
+
+.indicatorWrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+.indicator {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border: 1px solid var(--ui-color-border-strong);
+  border-radius: 0.35rem;
+  background: var(--ui-color-surface);
+  transition:
+    background-color var(--aster-duration-fast) var(--aster-easing-standard),
+    border-color var(--aster-duration-fast) var(--aster-easing-standard),
+    box-shadow var(--aster-duration-fast) var(--aster-easing-standard);
+}
+
+.indicator::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0.36rem;
+  inset-block-start: 0.14rem;
+  inline-size: 0.28rem;
+  block-size: 0.62rem;
+  border-inline-end: 2px solid transparent;
+  border-block-end: 2px solid transparent;
+  transform: rotate(45deg);
+}
+
+.input:checked + .indicator,
+.input[data-indeterminate='true'] + .indicator {
+  background: var(--ui-color-accent);
+  border-color: var(--ui-color-accent);
+}
+
+.input:checked + .indicator::after,
+.input[data-indeterminate='true'] + .indicator::after {
+  border-color: var(--ui-color-text-on-accent);
+}
+
+.input:focus-visible + .indicator {
+  outline: none;
+  box-shadow: var(--ui-focus-ring);
+}
+
+.input:disabled + .indicator {
+  background: var(--ui-color-surface-muted);
+  border-color: var(--ui-color-border);
+}
+
+.copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.label {
+  font: var(--ui-text-label);
+}
+
+.description {
+  font: 400 var(--aster-font-size-2) / var(--aster-line-height-regular) var(--ui-font-body);
+  color: var(--ui-color-text-muted);
+}
+
+.root[data-invalid] .indicator {
+  border-color: color-mix(in srgb, var(--ui-color-danger) 44%, white);
+}

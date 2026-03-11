@@ -1,0 +1,29 @@
+.root {
+  display: grid;
+  gap: var(--aster-space-2);
+}
+
+.vertical {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.horizontal {
+  grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--aster-space-4);
+}
+
+.label {
+  font: var(--ui-text-label);
+  color: var(--ui-color-text);
+}
+
+.description {
+  font: 400 var(--aster-font-size-2) / var(--aster-line-height-regular) var(--ui-font-body);
+  color: var(--ui-color-text-muted);
+}
+
+.error {
+  font: 500 var(--aster-font-size-2) / var(--aster-line-height-regular) var(--ui-font-body);
+  color: var(--ui-color-danger);
+}

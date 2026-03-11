@@ -1,0 +1,26 @@
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+
+:where(html) {
+  font-family: var(--ui-font-body);
+  background: var(--ui-color-background);
+  color: var(--ui-color-text);
+  text-size-adjust: 100%;
+}
+
+:where(body) {
+  margin: 0;
+}
+
+:where(button, input, textarea, select) {
+  font: inherit;
+}
+
+:where(button) {
+  color: inherit;
+}
+
+:where(p, h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+}
