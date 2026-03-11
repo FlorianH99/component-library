@@ -217,6 +217,23 @@ Prefer lightweight documents that explain:
 - known constraints
 - review scorecards or checklists when useful
 
+## Git And Secrets Hygiene
+Treat secret handling as a default engineering requirement, not a cleanup step.
+
+Always:
+- create or update a project `.gitignore` early when scaffolding a repo or app
+- ignore local secret files such as `.env`, `.env.*`, `*.local`, and any file that may contain API keys, tokens, private certificates, or service credentials
+- ignore dependency directories, build output, coverage output, cache folders, logs, local database files, and editor or OS noise
+- provide a committed safe template such as `.env.example` when an app needs documented environment variables
+- keep real secrets server-side and out of browser bundles, examples, screenshots, and checked-in fixtures
+- prefer conservative ignore rules when a file might plausibly contain sensitive local configuration
+
+Avoid:
+- committing any real API key, token, secret, private URL, or credential placeholder that resembles a live value
+- relying on memory to add `.gitignore` later
+- storing secrets in test fixtures, demo JSON, markdown examples, or copied terminal output
+- exposing secrets through frontend env conventions unless the value is explicitly meant to be public
+
 ## Review Priorities
 When reviewing code, prioritize:
 - correctness
